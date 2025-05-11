@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: "composer"
+    directory: "/" # Jika composer.json berada di root
+    schedule:
+      interval: "daily" # Dependabot akan cek update setiap hari
+      time: "03:00" # Waktu UTC
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "security"
+      - "dependencies"
+    reviewers:
+      - "Dailylepedia-Grup"
+    ignore:
+      - dependency-name: "phpoffice/phpspreadsheet"
+        versions: ["2.0.0"]
