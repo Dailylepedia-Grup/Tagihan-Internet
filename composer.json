@@ -1,0 +1,11 @@
+{
+    "config": {
+        "platform": {
+            "php": "7.4.33"
+        }
+    },
+    "require": {
+        "midtrans/midtrans-php": "^2.5",
+        "phpoffice/phpspreadsheet": "^1.18"
+    }
+}
