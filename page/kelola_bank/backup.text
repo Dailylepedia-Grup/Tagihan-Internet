@@ -1,0 +1,191 @@
+<?php
+session_start(); // Pastikan memulai sesi
+
+if (isset($_SESSION['admin']) && $_SESSION['admin'] == true) {
+
+?>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Advanced Tables -->
+            <div class="box box-primary box-solid">
+                <div class="box-header with-border">
+                    Daftar Rekening Saya
+                </div>
+                <div class="panel-body">
+                    <button type="button" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" data-target="#exampleModalLong">
+                        Bank Baru
+                    </button>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="example1">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Bank</th>
+                                    <th>Nomor Rekening</th>
+                                    <th>Atas Nama</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 1;
+                                $sql2 = $koneksi->query("SELECT * FROM tbl_rekening");
+                                while ($data = $sql2->fetch_assoc()) { ?>
+                                    <tr>
+                                        <td><?= $i++; ?></td>
+                                        <td><?= $data['nama_bank'] ?></td>
+                                        <td><?= $data['nomor_rekening'] ?></td>
+                                        <td><?= $data['nama_rekening'] ?></td>
+                                        <td>
+                                            <a href="#" type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModalLong1<?php echo $data['id_rekening']; ?>"><i class="fa fa-edit"></i> Ubah</a>
+                                            <a href="?page=kelola_bank&aksi=hapus&id=<?= $data['id_rekening']; ?>" class="btn btn-danger"><i class="fa fa-trash"></i> Hapus</a>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form role="form" method="POST" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title" id="exampleModalLongTitle">Tambah Rekening</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Nama Rekening</label>
+                            <input type="text" class="form-control" name="nama_bank" placeholder="BCA/BRI/Mandiri/OVO/DANA/GOPAY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Nomor Rekening</label>
+                            <input type="text" class="form-control" name="nomor_rekening" placeholder="1234" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Atas Nama</label>
+                            <input type="text" class="form-control" name="nama_rekening" placeholder="MINIONS" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" name="tambah_rekening" class="btn btn-primary">Tambah Rekening</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <?php
+
+    if (isset($_POST['tambah_rekening'])) {
+        $nama_bank = $_POST['nama_bank'];
+        $nomor_rekening = $_POST['nomor_rekening'];
+        $atas_nama = $_POST['nama_rekening'];
+
+        $sql = $koneksi->query("INSERT INTO tbl_rekening (nama_bank, nomor_rekening, nama_rekening) VALUES ('$nama_bank', '$nomor_rekening', '$atas_nama')");
+
+        if ($sql) {
+            echo "
+
+              <script>
+                  setTimeout(function() {
+                      swal({
+                          title: 'Data Bank',
+                          text: 'Berhasil Disimpan!',
+                          type: 'success'
+                      }, function() {
+                          window.location = '?page=kelola_bank';
+                      });
+                  }, 300);
+              </script>
+
+          ";
+        }
+    }
+
+    ?>
+
+    <?php
+    $sql3 = $koneksi->query("SELECT * FROM tbl_rekening");
+    while ($ubah_rek = $sql3->fetch_assoc()) {
+    ?>
+        <div class="modal fade" id="exampleModalLong1<?= $ubah_rek['id_rekening'] ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form role="form" method="POST" enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Ubah Rekening</h5>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="id_rekening" value="<?= $ubah_rek['id_rekening'] ?>">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Nama Rekening</label>
+                                <input type="text" class="form-control" name="nama_bank" value="<?= $ubah_rek['nama_bank'] ?>" placeholder="BCA/BRI/Mandiri/OVO/DANA/GOPAY" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Nomor Rekening</label>
+                                <input type="text" class="form-control" name="nomor_rekening" value="<?= $ubah_rek['nomor_rekening'] ?>" placeholder="1234" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Atas Nama</label>
+                                <input type="text" class="form-control" name="nama_rekening" value="<?= $ubah_rek['nama_rekening'] ?>" placeholder="MINIONS" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                            <button type="submit" name="ubah_rekening" class="btn btn-primary">Ubah Rekening</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+
+    <?php
+
+    if (isset($_POST['ubah_rekening'])) {
+        $id_rekening = $_POST['id_rekening'];
+        $nama_bank = $_POST['nama_bank'];
+        $nomor_rekening = $_POST['nomor_rekening'];
+        $atas_nama = $_POST['nama_rekening'];
+
+        $update = $koneksi->query("UPDATE tbl_rekening SET nama_bank='$nama_bank', nomor_rekening='$nomor_rekening', nama_rekening='$atas_nama' WHERE id_rekening='$id_rekening'");
+
+        if ($update) {
+            echo "
+
+              <script>
+                  setTimeout(function() {
+                      swal({
+                          title: 'Nomor Rekening',
+                          text: 'Berhasil Di Update',
+                          type: 'success'
+                      }, function() {
+                          window.location = '?page=kelola_bank';
+                      });
+                  }, 300);
+              </script>
+
+          ";
+        }
+    }
+    ?>
+
+
+<?php
+} else {
+    echo "Anda Tidak Berhak Mengakses Halaman Ini";
+}
+?>
